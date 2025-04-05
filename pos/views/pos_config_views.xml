@@ -1,22 +1,21 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<odoo>
-    <!-- Inherit the POS config form view -->
-    <record id="pos_config_view_form_inherit" model="ir.ui.view">
-        <field name="name">pos.config.form.inherit.waiter</field>
-        <field name="model">pos.config</field>
-        <field name="inherit_id" ref="point_of_sale.pos_config_view_form"/>
-        <field name="arch" type="xml">
-            <xpath expr="//sheet" position="inside">
-                <group string="Waiter Configuration" col="2">
-<!--                    <separator string="Waiter Settings" colspan="2"/>-->
-                    <field name="require_waiter"/>
-                    <field name="default_waiter" invisible= "not require_waiter"/>
-                    <field name="available_waiters" widget="many2many_tags" colspan="2"/>
-                </group>
-            </xpath>
-<!-- <xpath expr="//field[@name='module_pos_restaurant']" position="after">-->
-<!--                <field name="employee_ids" domain="[('is_waiter', '=', True)]"/>-->
+<!--<?xml version="1.0" encoding="UTF-8"?>-->
+<!--<odoo>-->
+<!--    &lt;!&ndash; Inherit the POS config form view &ndash;&gt;-->
+<!--    <record id="pos_config_view_form_inherit" model="ir.ui.view">-->
+<!--        <field name="name">pos.config.form.inherit.waiter</field>-->
+<!--        <field name="model">pos.config</field>-->
+<!--        <field name="inherit_id" ref="point_of_sale.pos_config_view_form"/>-->
+<!--        <field name="arch" type="xml">-->
+<!--            <xpath expr="//sheet" position="inside">-->
+<!--                <group string="Waiter Configuration" col="2">-->
+<!--&lt;!&ndash;                    <separator string="Waiter Settings" colspan="2"/>&ndash;&gt;-->
+<!--                    <field name="waiter_ids"/>-->
+
+<!--                </group>-->
 <!--            </xpath>-->
-        </field>
-    </record>
-</odoo>
+<!--&lt;!&ndash; <xpath expr="//field[@name='module_pos_restaurant']" position="after">&ndash;&gt;-->
+<!--&lt;!&ndash;                <field name="employee_ids" domain="[('is_waiter', '=', True)]"/>&ndash;&gt;-->
+<!--&lt;!&ndash;            </xpath>&ndash;&gt;-->
+<!--        </field>-->
+<!--    </record>-->
+<!--</odoo>-->

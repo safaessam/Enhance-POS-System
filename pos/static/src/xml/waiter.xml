@@ -1,19 +1,100 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <templates id="template" xml:space="preserve">
+    <!-- Extend OrderWidget to include waiter assignment and display -->
+    <t t-name="pos_waiter.OrderWidget"
+       t-inherit="point_of_sale.OrderWidget"
+       t-inherit-mode="extension"
+       owl="1">
 
-    <t t-name="your_module.ControlButtons" t-inherit="point_of_sale.ControlButtons" t-inherit-mode="extension" owl="1">
-
-        <xpath expr="//t[@t-if='props.showRemainingButtons']/div/OrderlineNoteButton" position="after">
-
-             <button class="btn btn-secondary btn-lg py-5" t-on-click="() => this.onClickPopup()">
-
-                 <i class="fa fa-pencil-square me-1" role="img" aria-label="Alert Popup" title="Custom Alert"/>Waiter Button
-
-             </button>
-
+        <!-- Inject waiter info UI above the order container -->
+        <xpath expr="//div[hasclass('order-container')]" position="before">
+            <div class="order-info d-flex justify-content-between align-items-center p-2 border-bottom">
+                <div class="waiter-info">
+                    <small class="text-muted">Waiter:</small>
+                    <span class="fw-bold ms-2">
+                        <t t-esc="props.order?.waiter_name || 'Unassigned'"/>
+                    </span>
+                </div>
+                <button class="btn btn-light btn-sm waiter-btn" t-on-click="selectWaiter">
+                    <i class="fa fa-user me-1"/>
+                    <span>
+                        <t t-esc="props.order?.waiter_id ? 'Change Waiter' : 'Assign Waiter'"/>
+                    </span>
+                </button>
+            </div>
         </xpath>
-
     </t>
-
 </templates>
+<!--<?xml version="1.0" encoding="UTF-8"?>-->
+<!--<templates id="template" xml:space="preserve">-->
+<!--    &lt;!&ndash; Extend OrderWidget to include waiter assignment and display &ndash;&gt;-->
+<!--    <t t-name="pos_waiter.OrderWidgetWithWaiter"-->
+<!--       t-inherit="point_of_sale.OrderWidget"-->
+<!--       t-inherit-mode="extension"-->
+<!--       owl="1">-->
+
+<!--        &lt;!&ndash; Inject waiter info UI above the order container &ndash;&gt;-->
+<!--        <xpath expr="//div[hasclass('order-container')]" position="before">-->
+<!--            <div class="order-info d-flex justify-content-between align-items-center p-2 border-bottom">-->
+<!--                <div class="waiter-info">-->
+<!--                    <small class="text-muted">Waiter:</small>-->
+<!--                    <span class="fw-bold ms-2">-->
+<!--                        <t t-esc="props.order?.waiter_name || 'Unassigned'"/>-->
+<!--                    </span>-->
+<!--                </div>-->
+<!--                <button class="btn btn-light btn-sm waiter-btn" t-on-click="selectWaiter">-->
+<!--                    <i class="fa fa-user me-1"/>-->
+<!--                    <span>-->
+<!--                        <t t-esc="props.order?.waiter_id ? 'Change Waiter' : 'Assign Waiter'"/>-->
+<!--                    </span>-->
+<!--                </button>-->
+<!--            </div>-->
+<!--        </xpath>-->
+
+<!--    </t>-->
+<!--</templates>-->
+<!--<?xml version="1.0" encoding="UTF-8"?>-->
+<!--<templates id="template" xml:space="preserve">-->
+<!--    <t t-name="pos_waiter.ControlButtons" t-inherit="point_of_sale.ControlButtons" t-inherit-mode="extension" owl="1">-->
+<!--        <xpath expr="//t[@t-if='props.showRemainingButtons']/div/OrderlineNoteButton" position="after">-->
+<!--           <button class="btn btn-light btn-sm waiter-btn" t-on-click="selectWaiter">-->
+<!--                    <i class="fa fa-user me-1"/>-->
+<!--                    <span>-->
+<!--                        <t t-esc="props.order?.waiter_id ? 'Change Waiter' : 'Assign Waiter'"/>-->
+<!--                    </span>-->
+<!--                </button>-->
+<!--        </xpath>-->
+<!--    </t>-->
+<!--</templates>-->
+<!--<templates id="template" xml:space="preserve">-->
+<!--    &lt;!&ndash; Inherit and extend ActionpadWidget &ndash;&gt;-->
+<!--    <t t-name="pos_waiter.WaiterSelectionButton" t-inherit="point_of_sale.ActionpadWidget" t-inherit-mode="extension" owl="1">-->
+<!--        &lt;!&ndash; Insert button before the Pay button &ndash;&gt;-->
+<!--        <xpath expr="//div[@class='validation d-flex gap-2']" position="inside">-->
+<!--            <button class="button btn btn-light py-3 text-start rounded-0 border-bottom" t-on-click="selectWaiter">-->
+<!--                <i class="fa fa-user"/> Select Waiter-->
+<!--            </button>-->
+<!--        </xpath>-->
+<!--    </t>-->
+<!--</templates>-->
+<!-- static/src/xml/WaiterButton.xml -->
+<!--<templates id="template" xml:space="preserve">-->
+<!--    <t t-name="pos_waiter.WaiterButton" t-inherit="point_of_sale.OrderWidget" t-inherit-mode="extension">-->
+<!--        <xpath expr="//div[@class=('order-info')]" position="inside">-->
+<!--            <button class="btn btn-light waiter-btn" t-on-click="selectWaiter">-->
+<!--                <i class="fa fa-user"/> Assign Waiter-->
+<!--            </button>-->
+<!--        </xpath>-->
+<!--    </t>-->
+<!--</templates>-->
+<!--<?xml version="1.0" encoding="UTF-8"?>-->
+<!--<templates id="template" xml:space="preserve">-->
+<!--    <t t-name="pos_waiter.ControlButtons" t-inherit="point_of_sale.ControlButtons" t-inherit-mode="extension" owl="1">-->
+<!--        <xpath expr="//t[@t-if='props.showRemainingButtons']/div/OrderlineNoteButton" position="after">-->
+<!--            <button class="btn btn-secondary btn-lg py-5" t-on-click="() => this.onClickWaiterButton()">-->
+<!--                <i class="fa fa-user me-1" role="img" aria-label="Assign Waiter" title="Assign Waiter"/>-->
+<!--                Assign Waiter-->
+<!--            </button>-->
+<!--        </xpath>-->
+<!--    </t>-->
+<!--</templates>-->

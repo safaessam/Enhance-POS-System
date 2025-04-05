@@ -4,18 +4,16 @@
 from odoo import api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
+class PosSession(models.Model):
 
-class PosConfig(models.Model):    # region ---------------------- TODO[IMP]: Private Attributes --------------------------------
-    _inherit = 'pos.config'    # endregion
+    # region ---------------------- TODO[IMP]: Private Attributes --------------------------------
+    _inherit = 'pos.session'
+    # endregion
 
     # region ---------------------- TODO[IMP]:Default Methods ------------------------------------
     # endregion
 
     # region ---------------------- TODO[IMP]: Fields Declaration ---------------------------------
-    available_waiters = fields.Many2many('res.users', string='Available Waiters')
-    require_waiter = fields.Boolean('Require Waiter Assignment', default=True)
-    default_waiter = fields.Many2one('res.users', string='Default Waiter', domain=[('is_waiter', '=', True)])
-    employee_ids = fields.Many2many('hr.employee', 'pos_config_employee_rel', 'pos_config_id', 'employee_id', string='Employees')
     # region  Basic
     # endregion
 
@@ -30,9 +28,29 @@ class PosConfig(models.Model):    # region ---------------------- TODO[IMP]: Pri
 
     # endregion
     # region ---------------------- TODO[IMP]: Compute methods ------------------------------------
+
+
+
+    @api.model
+    def _load_pos_data_models(self, config_id):
+        data = super()._load_pos_data_models(config_id)
+        data += ['hr.employee']  # Load employee data for waiter functionality
+        return data
+
+    # Method to assign waiter to a specific order
+    @api.model
+    def assign_waiter(self, order_id, waiter_id):
+        order = self.env['pos.order'].browse(order_id)
+        if not order:
+            raise UserError('Order not found!')
+        if not self.env['hr.employee'].browse(waiter_id):
+            raise ValidationError('Invalid waiter!')
+        order.waiter_id = waiter_id
+
     # endregion
 
     # region ---------------------- TODO[IMP]: Constrains and Onchanges ---------------------------
+
     # endregion
 
     # region ---------------------- TODO[IMP]: CRUD Methods -------------------------------------
@@ -42,4 +60,7 @@ class PosConfig(models.Model):    # region ---------------------- TODO[IMP]: Pri
     # endregion
 
     # region ---------------------- TODO[IMP]: Business Methods -------------------------------------
+
+
+
     # endregion

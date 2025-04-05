@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--To add new field suggestion to pos order-->
+<odoo>
+  <record id="view_pos_pos_form" model="ir.ui.view">
+      <field name="name">pos.order.pos.order.waiter</field>
+      <field name="model">pos.order</field>
+      <field name="inherit_id" ref="point_of_sale.view_pos_pos_form"/>
+      <field name="arch" type="xml">
+          <xpath expr="//sheet" position="inside">
+                  <group string="Waiter Info">
+                <field name="waiter_id"/>
+
+              </group>
+          </xpath>
+      </field>
+  </record>
+</odoo>
