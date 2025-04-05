@@ -14,7 +14,9 @@ class PosOrder(models.Model):
     # endregion
 
     # region ---------------------- TODO[IMP]: Fields Declaration ---------------------------------
-    waiter_id = fields.Many2one('pos.waiter', string='Assigned Waiter', required=True)
+    waiter_id = fields.Many2one('res.users', string='Assigned Waiter', domain=[('is_waiter', '=', True)],required=True)
+
+
 
     # region  Basic
     # endregion

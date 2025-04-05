@@ -12,9 +12,10 @@ class PosConfig(models.Model):    # region ---------------------- TODO[IMP]: Pri
     # endregion
 
     # region ---------------------- TODO[IMP]: Fields Declaration ---------------------------------
+    available_waiters = fields.Many2many('res.users', string='Available Waiters')
     require_waiter = fields.Boolean('Require Waiter Assignment', default=True)
-    default_waiter = fields.Many2one('pos.waiter', string='Default Waiter')
-
+    default_waiter = fields.Many2one('res.users', string='Default Waiter', domain=[('is_waiter', '=', True)])
+    employee_ids = fields.Many2many('hr.employee', 'pos_config_employee_rel', 'pos_config_id', 'employee_id', string='Employees')
     # region  Basic
     # endregion
 
