@@ -7,11 +7,12 @@ import { rpc } from "@web/core/network/rpc";
 
 patch(OrderWidget.prototype, {
     setup() {
-        super.setup();
+        super.setup(...arguments);
         this.dialog = useService("dialog");
         this.pos = useService("pos");
         this.notification = useService("notification");
         this.busService = this.env.services.bus_service;
+        this.is_waiter = this.is_waiter || null;
 
 
     },
@@ -27,8 +28,8 @@ patch(OrderWidget.prototype, {
 
         // Safely load employees with null checks and ensure is_waiter is loaded
 
-        const allEmployees = this.pos.models['hr.employee'] || [];
-
+        const allEmployees = this.pos.models['hr.employee']|| [];
+//        const allEmployees = arguments.find(arg => arg?.is_waiter === 'hr.employee').models;
         // Ensure that we map the employee data correctly
         const employeesWithWaiterStatus = allEmployees.map(employee => ({
             id: employee.id,

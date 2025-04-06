@@ -6,6 +6,7 @@ from odoo.exceptions import UserError, ValidationError
 
 class HrEmployee(models.Model):
     # region ---------------------- TODO[IMP]: Private Attributes --------------------------------
+
     _inherit = ['hr.employee']    # endregion
 
     # region ---------------------- TODO[IMP]:Default Methods ------------------------------------
