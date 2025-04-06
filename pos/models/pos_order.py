@@ -1,8 +1,12 @@
 # -*- coding: utf-8 -*-
 
 
-from odoo import api, fields, models
+from odoo import api, fields, models, _
 from odoo.exceptions import UserError, ValidationError
+import logging
+
+
+_logger = logging.getLogger(__name__)
 
 class PosOrder(models.Model):
 
@@ -17,44 +21,102 @@ class PosOrder(models.Model):
     waiter_id = fields.Many2one(
         'hr.employee',
         string='Assigned Waiter',
-        readonly=True,
-        help='Employee responsible for this order',
-        domain=[('is_waiter', '=', True)],)
-    # waiter_ids = fields.Many2many('hr.employee', string="Waiters",domain=[('is_waiter', '=', 'True')])
-    # region  Basic
-    # endregion
+        domain=[('is_waiter', '=', True)],
+        help='Employee responsible for this order'
+    )
 
     # Load POS data fields
+    @api.model
+    def _process_order(self, order, existing_order=None):
+        """Enhanced order processing with validation"""
+        try:
+            # Convert orders to list if a single order is passed
+            if isinstance(order, dict):
+                order = [order]
+
+            # Validate input (ensure it's a list of orders)
+            if not isinstance(order, list):
+                raise ValidationError(_("Orders must be a list"))
+
+            order_ids = []  # List to hold order IDs
+            for o in order:  # Loop through orders
+                if not isinstance(o, dict):
+                    raise ValidationError(_("Each order must be a dictionary"))
+
+                draft = True if o.get('state') == 'draft' else False
+                # You can continue processing the order here, e.g. creating or updating records
+                order_ids.append(self.create(o))  # This is just an example. Adjust based on your logic.
+
+            return order_ids
+        except Exception as e:
+            _logger.error("Order processing failed: %s", str(e), exc_info=True)
+            raise
 
     @api.model
-    def _load_pos_data_fields(self, config_id):
-        fields = super()._load_pos_data_fields(config_id)
-        fields += ['partner_id', 'table_id', 'lines']  # Include lines
-        if self.env['pos.config'].browse(config_id).module_pos_restaurant:
-            fields += ['waiter_id']
+    def _order_fields(self, ui_order):
+        """Handle order fields with validation"""
+        fields = super(PosOrder, self)._order_fields(ui_order)
+
+        # Safely add waiter fields
+        if isinstance(ui_order, dict):
+            fields.update({
+                'waiter_id': ui_order.get('waiter_id'),
+                'waiter_name': ui_order.get('waiter_name'),
+                'waiter_data': ui_order.get('waiter_data', {})
+            })
         return fields
 
-    def _export_for_ui(self, order):
-        result = super()._export_for_ui(order)
-        result.update({
-            'partner_id': order.partner_id.id if order.partner_id else False,
-            'table_id': order.table_id.id if order.table_id else False,
-            'lines': order.lines.ids if order.lines else [],
-            'waiter_id': order.waiter_id.id if order.waiter_id else False,
-            'waiter_name': order.waiter_id.name if order.waiter_id else False
-        })
-        return result
 
-    def _order_fields(self, ui_order):
-        order_fields = super()._order_fields(ui_order)
-        order_fields.update({
-            'partner_id': ui_order.get('partner_id', False),
-            'table_id': ui_order.get('table_id', False),
-            'lines': ui_order.get('lines', []),
-            'waiter_id': ui_order.get('waiter_id', False)
-        })
-        return order_fields
-
+    # @api.model
+    # def sync_from_ui(self, orders):
+    #     """
+    #     Robust order synchronization with proper error handling
+    #     """
+    #     try:
+    #         if not isinstance(orders, list):
+    #             _logger.error("Invalid orders format: %s", type(orders))
+    #             return {
+    #                 'success': False,
+    #                 'error': _("Invalid orders format"),
+    #                 'code': 'INVALID_FORMAT'
+    #             }
+    #
+    #         results = []
+    #         for order in orders:
+    #             try:
+    #                 # Validate required fields
+    #                 if not all(k in order for k in ['id', 'lines', 'config_id']):
+    #                     raise UserError(_("Missing required order fields"))
+    #
+    #                 # Process with parent implementation
+    #                 order_id = super(PosOrder, self)._process_order(
+    #                     order,
+    #                     draft=False,
+    #                     existing_order=order.get('id', False)
+    #                 )
+    #                 results.append(order_id)
+    #             except Exception as e:
+    #                 _logger.error("Order processing failed: %s", str(e), exc_info=True)
+    #                 results.append({
+    #                     'success': False,
+    #                     'error': str(e),
+    #                     'order': order.get('id', 'unknown')
+    #                 })
+    #
+    #         return {
+    #             'success': True,
+    #             'processed': len([r for r in results if isinstance(r, int)]),
+    #             'failed': len([r for r in results if not isinstance(r, int)]),
+    #             'results': results
+    #         }
+    #
+    #     except Exception as e:
+    #         _logger.error("Sync failed: %s", str(e), exc_info=True)
+    #         return {
+    #             'success': False,
+    #             'error': _("Server error occurred"),
+    #             'code': 'SERVER_ERROR'
+    #         }
 
     @api.constrains('waiter_id')
     def _check_waiter_assignment(self):
@@ -74,11 +136,7 @@ class PosOrder(models.Model):
 
     # region ---------------------- TODO[IMP]: Constrains and Onchanges ---------------------------
     #
-    @api.constrains('waiter_id')
-    def _check_waiter(self):
-        for order in self:
-            if not order.waiter_id:
-                raise ValidationError("You must assign a waiter to the order before proceeding.")
+
 
     # endregion
 

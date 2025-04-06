@@ -1,3 +1,9 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_pos_waiter,access_pos_waiter,model_pos_waiter,base.group_system,1,1,1,1
-access_pos_waiter,access_pos_waiter,model_pos_waiter,base.group_user,1,1,1,1
+access_pos_order,access_pos_order,model_pos_order,base.group_system,1,1,1,1
+access_pos_order,access_pos_order,model_pos_order,base.group_user,1,1,1,1
+
+access_pos_session,access_pos_session,model_pos_session,base.group_system,1,1,1,1
+access_pos_session,access_pos_session,model_pos_session,base.group_user,1,1,1,1
+
+access_pos_employee,access_pos_employee,model_hr_employee,base.group_system,1,1,1,1
+access_pos_employee,access_pos_employee,model_hr_employee,base.group_user,1,1,1,1

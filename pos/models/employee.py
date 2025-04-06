@@ -16,6 +16,7 @@ class HrEmployee(models.Model):
     is_waiter = fields.Boolean(
         string='Is Waiter',
         default=False,
+        # store=True,
         help='Check this box if this employee is a waiter in the restaurant',
         # groups="base.group_user"
     )
@@ -33,6 +34,7 @@ class HrEmployee(models.Model):
 
     # endregion
     # region ---------------------- TODO[IMP]: Compute methods ------------------------------------
+    # Make sure that `is_waiter` is included in the returned fields
 
     # endregion
 
@@ -47,22 +49,11 @@ class HrEmployee(models.Model):
     @api.model
     def _load_pos_data_fields(self, config_id):
         fields = super()._load_pos_data_fields(config_id)
-        return fields + ['is_waiter']  # Ensure field is included
-
-    @api.model
-    def _loader_params_hr_employee(self):
-        """Define how employee data is loaded to POS"""
-        return {
-            'search_params': {
-                'domain': [],  # Load all employees, filter in frontend
-                'fields': ['name', 'id', 'is_waiter'],
-            }
-        }
-
-# return ['id', 'name','is_waiter']
+        return fields + ['is_waiter']
 
 
-        # return ['id', 'name','is_waiter']
+
+
 
     # endregion
 

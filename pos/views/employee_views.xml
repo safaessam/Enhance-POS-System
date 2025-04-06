@@ -15,5 +15,32 @@
             </xpath>
         </field>
     </record>
+    <!-- Filter Employee List to Show Only Waiters -->
+    <record id="view_employee_tree_inherit" model="ir.ui.view">
+        <field name="name">hr.employee.tree.inherit</field>
+        <field name="model">hr.employee</field>
+        <field name="priority" eval="45"/>
+        <field name="inherit_id" ref="hr.view_employee_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//list" position="inside">
+                <field name="is_waiter"/>
+            </xpath>
+        </field>
+    </record>
+     <!-- Add Filter to Employee Search View for Waiters -->
+    <record model="ir.ui.view" id="view_employee_search_inherit">
+        <field name="name">hr.employee.search.inherit</field>
+        <field name="model">hr.employee</field>
+        <field name="priority" eval="45"/>
+        <field name="inherit_id" ref="hr.view_employee_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <filter  name="is_waiter" string="Waiters" domain="[('is_waiter', '=', True)]"/>
+            </xpath>
+        </field>
+    </record>
 </odoo>
+
+
+
 
