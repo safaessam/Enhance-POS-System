@@ -8,7 +8,7 @@
       <field name="arch" type="xml">
           <xpath expr="//sheet" position="inside">
                   <group string="Waiter Info">
-                <field name="waiter_id"/>
+                <field name="waiter_id" />
 
               </group>
           </xpath>

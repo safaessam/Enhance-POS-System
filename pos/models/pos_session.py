@@ -11,6 +11,12 @@ class PosSession(models.Model):
     # endregion
 
     # region ---------------------- TODO[IMP]:Default Methods ------------------------------------
+    is_waiter = fields.Boolean(
+        string='Is Waiter',
+        default=False,
+        help='Check this box if this employee is a waiter in the restaurant',
+        # groups="base.group_user"
+    )
     # endregion
 
     # region ---------------------- TODO[IMP]: Fields Declaration ---------------------------------
@@ -50,6 +56,7 @@ class PosSession(models.Model):
                 'fields': ['name', 'id', 'is_waiter'],
             }
         }
+
     # Method to assign waiter to a specific order
 
     def assign_waiter_to_order(self, order_id, waiter_id):
