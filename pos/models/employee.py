@@ -56,22 +56,4 @@ class HrEmployee(models.Model):
 
     # region ---------------------- TODO[IMP]: Business Methods -------------------------------------
     # endregion
-class ResUsers(models.Model):
-
-    _inherit = 'res.users'
-
-
-    hide_product_information = fields.Boolean()
-
-
-    @api.model
-
-    def _load_pos_data_fields(self, config_id):
-
-        res = super()._load_pos_data_fields(config_id)
-
-        res += ['hide_product_information']
-
-        return res
-
 

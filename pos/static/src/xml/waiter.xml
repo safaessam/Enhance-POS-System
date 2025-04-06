@@ -15,7 +15,7 @@
                         <t t-esc="props.order?.waiter_name || 'Unassigned'"/>
                     </span>
                 </div>
-                <button class="btn btn-light btn-sm waiter-btn" t-on-click="selectWaiter">
+                <button class="btn btn-light btn-sm waiter-btn" t-on-click="onClickWaiterButton">
                     <i class="fa fa-user me-1"/>
                     <span>
                         <t t-esc="props.order?.waiter_id ? 'Change Waiter' : 'Assign Waiter'"/>
@@ -25,6 +25,34 @@
         </xpath>
     </t>
 </templates>
+<!--<?xml version="1.0" encoding="UTF-8"?>-->
+<!--<templates id="template" xml:space="preserve">-->
+<!--    &lt;!&ndash; Extend OrderWidget to include waiter assignment and display &ndash;&gt;-->
+<!--    <t t-name="pos_waiter.OrderWidget"-->
+<!--       t-inherit="point_of_sale.OrderWidget"-->
+<!--       t-inherit-mode="extension"-->
+<!--       owl="1">-->
+
+<!--        &lt;!&ndash; Inject waiter info UI above the order container &ndash;&gt;-->
+<!--        <xpath expr="//div[hasclass('order-container')]" position="before">-->
+<!--            <div class="order-info d-flex justify-content-between align-items-center p-2 border-bottom"-->
+<!--                 t-att-class="{'bg-light': !props.order?.waiter_id}">-->
+<!--                <div class="waiter-info d-flex align-items-center">-->
+<!--                    <i class="fa fa-user-tie text-muted me-2"/>-->
+<!--                    <div>-->
+<!--                        <small class="text-muted d-block">Waiter:</small>-->
+<!--                        <span class="fw-bold" t-esc="props.order?.waiter_name || 'Unassigned'"/>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--                <button class="btn btn-light btn-sm waiter-btn" t-on-click="onClickWaiterButton">-->
+<!--                    <i class="fa"-->
+<!--                       t-att-class="props.order?.waiter_id ? 'fa-pencil' : 'fa-user-plus'"/>-->
+<!--                    <span t-esc="props.order?.waiter_id ? 'Change' : 'Assign'"/>-->
+<!--                </button>-->
+<!--            </div>-->
+<!--        </xpath>-->
+<!--    </t>-->
+<!--</templates>-->
 <!--<?xml version="1.0" encoding="UTF-8"?>-->
 <!--<templates id="template" xml:space="preserve">-->
 <!--    &lt;!&ndash; Extend OrderWidget to include waiter assignment and display &ndash;&gt;-->

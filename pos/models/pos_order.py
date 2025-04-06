@@ -28,15 +28,6 @@ class PosOrder(models.Model):
 
     @api.model
     def _load_pos_data_fields(self, config_id):
-        """Ensure partner_id is always loaded"""
-        fields = super()._load_pos_data_fields(config_id)
-        fields += ['partner_id']  # Always include partner_id
-        if self.env['pos.config'].browse(config_id).module_pos_restaurant:
-            fields += ['waiter_id']
-        return fields
-
-    @api.model
-    def _load_pos_data_fields(self, config_id):
         fields = super()._load_pos_data_fields(config_id)
         fields += ['partner_id', 'table_id', 'lines']  # Include lines
         if self.env['pos.config'].browse(config_id).module_pos_restaurant:
@@ -63,6 +54,7 @@ class PosOrder(models.Model):
             'waiter_id': ui_order.get('waiter_id', False)
         })
         return order_fields
+
 
     @api.constrains('waiter_id')
     def _check_waiter_assignment(self):

@@ -39,7 +39,6 @@
                 "pos/static/src/js/pos_order.js",
                 "pos/static/src/js/order_widget.js",
                 "pos/static/src/js/receipt.js",
-                # "pos/static/src/js/waiter.js",
                 # 'pos/static/src/**/*',
                 "pos/static/src/js/*.js",
                 "pos/static/src/xml/*.xml",

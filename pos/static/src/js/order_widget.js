@@ -2,85 +2,100 @@
 import { OrderWidget } from "@point_of_sale/app/generic_components/order_widget/order_widget";
 import { patch } from "@web/core/utils/patch";
 import { useService } from "@web/core/utils/hooks";
-import { useState } from "@odoo/owl";
-import { SelectionPopup } from "@point_of_sale/app/utils/input_popups/selection_popup";
+import { _t } from "@web/core/l10n/translation";
+
 patch(OrderWidget.prototype, {
-        setup() {
-            super.setup();
-            this.pos = useService("pos");
-            this.dialog = useService("dialog");
-            this.notification = useService("notification");
+    setup() {
+        super.setup();
+        this.dialog = useService("dialog");
+        this.pos = useService("pos");
+        this.notification = useService("notification");
+    },
 
-            // Bind selectWaiter method to the context
-            this.selectWaiter = this.selectWaiter.bind(this);
+    get waiter() {
+        return this.props.order.get_waiter();
+    },
 
-            this.state = useState({
-                hasOrder: false,
-                isLoading: false,
-                waiter: null,
-            });
-        },
+    async onClickWaiterButton() {
+    try {
+        if (!this.pos || !this.pos.employees) {
+            this.notification.add(
+                _t("Employees data is not loaded yet"),
+                { type: 'warning', title: _t("Waiter Assignment") }
+            );
+            return;
+        }
 
-        onMounted() {
-            super.onMounted?.();
-            this._updateOrderState();
-        },
+        const waiterList = this.pos.employees.filter(
+            employee => employee.is_waiter
+        )
+            .map(employee => ({
+                id: employee.id,
+                name: employee.name,
+            }));
 
-        onWillUpdateProps() {
-            super.onWillUpdateProps?.();
-            this._updateOrderState();
-        },
+        if (!waiterList.length) {
+            this.notification.add(
+                _t("No waiters configured in the system"),
+                { type: 'warning', title: _t("Waiter Assignment") }
+            );
+            return;
+        }
 
-        _updateOrderState() {
-            const order = this.pos.get_order();
-            this.state.hasOrder = !!order && !!order.get_orderlines;
-            if (this.state.hasOrder) {
-                this.state.waiter = order.waiter_id
-                    ? this.pos.employees.find(e => e.id === order.waiter_id)
-                    : null;
+        // Use standard dialog.confirm with custom body
+        const confirmed = await this.dialog.confirm(
+            this._createWaiterSelectionBody(waiterList),
+            {
+                title: _t("Select Waiter"),
+                confirm: _t("Assign"),
+                cancel: _t("Cancel"),
             }
-        },
+        );
 
-        async selectWaiter() {
-            if (!this.state.hasOrder || this.state.isLoading) return;
-
-            try {
-                this.state.isLoading = true;
-                const order = this.pos.get_order();
-
-                if (!this.pos.config.module_pos_restaurant) return;
-
-                const waiters = this.pos.employees.filter(emp => emp.is_waiter);
-                if (!waiters.length) {
-                    this.notification.add(this.env._t("No waiters available"), 3000);
-                    return;
-                }
-
-                const { confirmed, payload: selectedWaiter } = await this.dialog.add(SelectionPopup, {
-                    title: this.env._t("Select Waiter"),
-                    list: waiters.map(waiter => ({
-                        id: waiter.id,
-                        item: waiter,
-                        label: waiter.name || this.env._t("Unnamed"),
-                        isSelected: order.waiter_id === waiter.id,
-                    })),
-                    search: true,
-                });
-
-                if (confirmed) {
-                    if (!selectedWaiter) {
-                        this.notification.add(this.env._t("A waiter must be selected to proceed"), 3000);
-                        return;
-                    }
-                    order.set_waiter(selectedWaiter);
-                    this.state.waiter = selectedWaiter;
-                }
-            } catch (error) {
-                console.error("Waiter selection error:", error);
-                this.notification.add(this.env._t("Error assigning waiter"), 3000);
-            } finally {
-                this.state.isLoading = false;
+        if (confirmed) {
+            const selectedId = parseInt(this._selectedWaiterId);
+            const selectedWaiter = waiterList.find(w => w.id === selectedId);
+            if (selectedWaiter) {
+                this.props.order.set_waiter(selectedWaiter);
+                this.notification.add(
+                    _t("Waiter %s assigned", selectedWaiter.name),
+                    { type: 'success', title: _t("Waiter Updated") }
+                );
             }
-        },
-    });
+        }
+    } catch (error) {
+        console.error("Waiter selection error:", error);
+        this.notification.add(
+            _t("Failed to select waiter. Please try again."),
+            { type: 'danger', title: _t("Error") }
+        );
+    }
 
+    },
+
+    _createWaiterSelectionBody(waiters) {
+        this._selectedWaiterId = this.waiter?.id || waiters[0]?.id;
+
+        const select = document.createElement('select');
+        select.className = 'form-select mb-3';
+        select.style.width = '100%';
+
+        waiters.forEach(waiter => {
+            const option = document.createElement('option');
+            option.value = waiter.id;
+            option.textContent = waiter.name;
+            if (waiter.id === this._selectedWaiterId) {
+                option.selected = true;
+            }
+            select.appendChild(option);
+        });
+
+        select.addEventListener('change', (ev) => {
+            this._selectedWaiterId = parseInt(ev.target.value);
+        });
+
+        const container = document.createElement('div');
+        container.appendChild(select);
+        return container;
+    },
+});
